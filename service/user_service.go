@@ -76,7 +76,24 @@ func (s UserService)UserUpdateService(updateUser entity.User)(entity.User, error
 	return s.userRepository.UserUpdateRepository(updateUser)
 }
 func (s UserService)UserDeleteService(loginEmail entity.User)error{
-	return s.userRepository.UserDeleteRepository(loginEmail)
+	loginEmail.Id ,_ = s.userRepository.GetUserId(loginEmail)
+	err := s.userRepository.UserDeletePhotoRepository(loginEmail)
+	if err!=nil{
+		return errors.New("something went wrong")
+	}
+	err = s.userRepository.UserDeleteCommentRepository(loginEmail)
+	if err!=nil{
+		return errors.New("something went wrong")
+	}
+	err = s.userRepository.UserDeleteSocMedRepository(loginEmail)
+	if err!=nil{
+		return errors.New("something went wrong")
+	}
+	err = s.userRepository.UserDeleteRepository(loginEmail)
+	if err!=nil{
+		return errors.New("something went wrong")
+	}
+	return nil
 }
 
 func hashPassword(password string) string{

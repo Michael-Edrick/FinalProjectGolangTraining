@@ -86,13 +86,73 @@ func (r userRepository)UserUpdateRepository(updateUser entity.User)(entity.User,
 func (r userRepository)UserDeleteRepository(loginEmail entity.User)error{
 	sqlStatement :=`
 	DELETE FROM users
-	WHERE email = $1
+	WHERE userId = $1
 	`
 
-	_, err := r.db.Exec(sqlStatement, loginEmail.Email)
+	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
 	if err != nil {
 		return err
 	}
 	
 	return err
+}
+
+func (r userRepository)UserDeletePhotoRepository(loginEmail entity.User)error{
+	sqlStatement :=`
+	DELETE FROM photos
+	WHERE user_id = $1
+	`
+
+	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	if err != nil {
+		return err
+	}
+	
+	return err
+}
+func (r userRepository)UserDeleteCommentRepository(loginEmail entity.User)error{
+	sqlStatement :=`
+	DELETE FROM comments
+	WHERE user_id = $1
+	`
+
+	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	if err != nil {
+		return err
+	}
+	
+	return err
+}
+func (r userRepository)UserDeleteSocMedRepository(loginEmail entity.User)error{
+	sqlStatement :=`
+	DELETE FROM socialmedia
+	WHERE user_id = $1
+	`
+
+	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	if err != nil {
+		return err
+	}
+	
+	return err
+}
+
+func (r userRepository)GetUserId(loginEmail entity.User)(int ,error){
+	sqlStatement := `
+	SELECT userID
+	FROM users
+	WHERE email = $1
+	`
+
+	rows, err := r.db.Query(sqlStatement, loginEmail.Email)
+	if err!= nil {
+		return 0, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&loginEmail.Id)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return loginEmail.Id, nil
 }

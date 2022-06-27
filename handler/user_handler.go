@@ -2,6 +2,7 @@ package handler
 
 import (
 	"FinalProject/entity"
+	"FinalProject/middleware"
 	"FinalProject/utils"
 	"encoding/json"
 	"fmt"
@@ -25,7 +26,7 @@ func NewUserHandler(r *mux.Router, userService entity.UserServiceInterface) {
 	}
 	r.HandleFunc("/users/{Id}", handler.userUpdateHandler)
 	r.HandleFunc("/users/", handler.userDeleteHandler)
-	// r.Handle("/users/{Id}", middleware.IsAuthorized())
+	r.Use(middleware.IsAuthorized())
 
 }
 
@@ -46,6 +47,7 @@ func (h UserHandler) userUpdateHandler (w http.ResponseWriter, r *http.Request){
 			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil{
+				w.Write([]byte("error"))
 				return
 			}else{
 				updateUser.Id = idInt
@@ -82,7 +84,7 @@ func (h UserHandler)userDeleteHandler(w http.ResponseWriter, r *http.Request){
 		var loginEmail entity.User
 		loginEmail.Email = claims["email"].(string)
 		err = h.userService.UserDeleteService(loginEmail)
-		if err != nil {
+		if err == nil {
 			response := map[string]string{
 				"message": "Your account has been successfully deleted",
 			}

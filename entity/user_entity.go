@@ -9,6 +9,10 @@ type UserRepository interface{
 	UserLoginRepository(newlogin User)(string, error)
 	UserUpdateRepository(updateuser User)(User, error)
 	UserDeleteRepository(deleteuser User)(error)
+	UserDeletePhotoRepository(deleteuser User)(error)
+	UserDeleteCommentRepository(deleteuser User)(error)
+	UserDeleteSocMedRepository(deleteuser User)(error)
+	GetUserId(loginEmail User)(int, error)
 }
 
 type UserServiceInterface interface {

@@ -5,6 +5,7 @@ import (
 	"FinalProject/handler"
 	"FinalProject/repository"
 	"FinalProject/service"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -30,7 +31,7 @@ func main(){
 	
 	srv := &http.Server{
 		Handler: r,
-		Addr:    "127.0.0.1:8088",
+		Addr:    fmt.Sprintf("127.0.0.1%s", PORT),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
