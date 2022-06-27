@@ -14,12 +14,14 @@ func IsAuthorized ()func(handler http.Handler) http.Handler {
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				w.Write([]byte("not authorized"))
+				return
 			}
 			if claims["email"] != ""{
 				handler.ServeHTTP(w, r)
 			} else {
 				w.WriteHeader(http.StatusUnauthorized)
 				w.Write([]byte("not authorized"))
+				return 
 			}
 		})
 	}

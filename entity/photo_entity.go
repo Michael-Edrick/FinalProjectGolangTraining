@@ -2,6 +2,14 @@ package entity
 
 import "time"
 
+type PhotoRepositoryInterface interface{
+
+}
+
+type PhotoServiceInterface interface{
+
+}
+
 type Photo struct {
 	Id         uint
 	Title      string

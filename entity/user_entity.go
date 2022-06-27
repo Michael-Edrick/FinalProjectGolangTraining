@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type UserRepository interface{
+type UserRepositoryInterface interface{
 	UserRegisterRepository(newuser User)(User, error)
 	UserLoginRepository(newlogin User)(string, error)
 	UserUpdateRepository(updateuser User)(User, error)

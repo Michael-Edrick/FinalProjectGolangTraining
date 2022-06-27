@@ -11,10 +11,10 @@ import (
 )
 
 type UserService struct {
-	userRepository entity.UserRepository
+	userRepository entity.UserRepositoryInterface
 }
 
-func NewUserService(userRepository entity.UserRepository) entity.UserServiceInterface {
+func NewUserService(userRepository entity.UserRepositoryInterface) entity.UserServiceInterface {
 	return &UserService{
 		userRepository: userRepository,
 	}

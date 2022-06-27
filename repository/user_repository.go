@@ -5,25 +5,48 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 type userRepository struct{
 	db *sql.DB
 }
 
-func NewUserRepository (db *sql.DB) entity.UserRepository{
+func NewUserRepository (db *sql.DB) entity.UserRepositoryInterface{
 	return userRepository{
 		db:db,
 	}
 }
 
 func (r userRepository)UserRegisterRepository(newUser entity.User) (entity.User, error) {
+	sqlEmailUnique :=`
+	SELECT userId FROM users WHERE email = $1
+	`
+	rows, err := r.db.Query(sqlEmailUnique, newUser.Email)
+    if err != nil {
+		return entity.User{}, err
+	}
+	if rows.Next() {
+        return entity.User{}, errors.New("email already registered")
+    }
+
+	sqlUsernameUnique :=`
+	SELECT userId FROM users WHERE username = $1
+	`
+	rows, err = r.db.Query(sqlUsernameUnique, newUser.Username)
+    if err != nil {
+		return entity.User{}, err
+	}
+	if rows.Next() {
+        return entity.User{}, errors.New("username already exists")
+    }
+	
 	sqlStatement := `
 	INSERT INTO users (username, email, password, age, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING userId
 	`
-	rows, err := r.db.Query(sqlStatement, newUser.Username, newUser.Email, newUser.Password, newUser.Age, newUser.Created_at, newUser.Updated_at)
+	rows, err = r.db.Query(sqlStatement, newUser.Username, newUser.Email, newUser.Password, newUser.Age, time.Now().Local(), time.Now().Local())
 	if err != nil {
 		return entity.User{}, err
 	}
@@ -64,12 +87,12 @@ func (r userRepository)UserLoginRepository(newLogin entity.User) (string, error)
 func (r userRepository)UserUpdateRepository(updateUser entity.User)(entity.User, error){
 	sqlStatement := `
 	UPDATE users
-	SET username = $1 , email = $2
-	WHERE userId = $3
+	SET username = $1 , email = $2, updated_at = $3
+	WHERE userId = $4
 	RETURNING userId, email, username, age, updated_at
 	`
 	fmt.Printf("%+v\n",updateUser)
-	rows, err := r.db.Query(sqlStatement, updateUser.Username, updateUser.Email, updateUser.Id)
+	rows, err := r.db.Query(sqlStatement, updateUser.Username, updateUser.Email, time.Now().Local(), updateUser.Id)
 	if err != nil {
 		return entity.User{}, err
 	}

@@ -31,7 +31,10 @@ func GenerateJWT(email string) (string, error) {
 func ParseJWT(header string)(jwt.MapClaims, error){
 	splitToken := strings.Split(header, "Bearer ")
 	header = splitToken[1]
-	fmt.Println(header)
+	if len(splitToken) < 2{
+		return nil, errors.New("token error")
+	}
+	fmt.Printf("token:%v\n",header)
 	token, err := jwt.Parse(header, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

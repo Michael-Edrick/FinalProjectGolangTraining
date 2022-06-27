@@ -24,9 +24,11 @@ func NewUserHandler(r *mux.Router, userService entity.UserServiceInterface) {
 		r:           r,
 		userService: userService,
 	}
-	r.HandleFunc("/users/{Id}", handler.userUpdateHandler)
-	r.HandleFunc("/users/", handler.userDeleteHandler)
-	r.Use(middleware.IsAuthorized())
+	s := r.PathPrefix("").Subrouter()
+	s.Use(middleware.IsAuthorized())
+	s.HandleFunc("/users/{Id}", handler.userUpdateHandler)
+	s.HandleFunc("/users", handler.userDeleteHandler)
+	
 
 }
 
