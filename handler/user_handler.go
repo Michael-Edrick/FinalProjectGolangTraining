@@ -2,7 +2,7 @@ package handler
 
 import (
 	"FinalProject/entity"
-	"FinalProject/mapping"
+	"FinalProject/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,6 +10,8 @@ import (
 
 	"github.com/gorilla/mux"
 )
+
+
 
 type UserHandler struct {
 	r *mux.Router
@@ -65,28 +67,30 @@ func (h UserHandler) userUpdateHandler (w http.ResponseWriter, r *http.Request){
 }
 
 func (h UserHandler)userDeleteHandler(w http.ResponseWriter, r *http.Request){
-	if r.Method == "POST" {
-		//baca dr body
-		decoder := json.NewDecoder(r.Body)
-		var newUser entity.User
-		err := decoder.Decode(&newUser)
-		if err != nil {
-			w.Write([]byte("error"))
-			return
-		}
-		//masuk ke user service
-		res, err := h.userService.RegisterService(newUser)
+	if r.Method == "DELETE" {
+
+		header:= r.Header.Get("Authorization")
+		claims, err := utils.ParseJWT(header)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
 			w.Write(res)
 			return
 		}
-		//keluarin response
-		response := mapping.RegisterMapping(res)
-		jsonData, _ := json.Marshal(&response)
-		w.Header().Add("Content-Type", "application/json")
-		w.Write(jsonData)
+		
+		//masuk ke user service
+		var loginEmail entity.User
+		loginEmail.Email = claims["email"].(string)
+		err = h.userService.UserDeleteService(loginEmail)
+		if err != nil {
+			response := map[string]string{
+				"message": "Your account has been successfully deleted",
+			}
+			res, _ := json.Marshal(response)
+			w.Header().Add("Content-Type", "application/json")
+			w.Write(res)
+			return
+		}
 	}
 }
 

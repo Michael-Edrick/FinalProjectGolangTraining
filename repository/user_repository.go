@@ -82,3 +82,17 @@ func (r userRepository)UserUpdateRepository(updateUser entity.User)(entity.User,
 
 	return updateUser, nil
 }
+
+func (r userRepository)UserDeleteRepository(loginEmail entity.User)error{
+	sqlStatement :=`
+	DELETE FROM users
+	WHERE email = $1
+	`
+
+	_, err := r.db.Exec(sqlStatement, loginEmail.Email)
+	if err != nil {
+		return err
+	}
+	
+	return err
+}

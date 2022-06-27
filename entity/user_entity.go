@@ -8,14 +8,14 @@ type UserRepository interface{
 	UserRegisterRepository(newuser User)(User, error)
 	UserLoginRepository(newlogin User)(string, error)
 	UserUpdateRepository(updateuser User)(User, error)
-	// UserDeleteRepository(deleteuser User)()
+	UserDeleteRepository(deleteuser User)(error)
 }
 
 type UserServiceInterface interface {
 	RegisterService(user User)(User, error)
 	LoginService(user User)(string, error)
 	UserUpdateService(user User)(User, error)
-	// UserDeleteService(user User)()
+	UserDeleteService(user User)(error)
 }
 
 type User struct{

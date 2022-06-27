@@ -75,6 +75,9 @@ func (s UserService)UserUpdateService(updateUser entity.User)(entity.User, error
 	}
 	return s.userRepository.UserUpdateRepository(updateUser)
 }
+func (s UserService)UserDeleteService(loginEmail entity.User)error{
+	return s.userRepository.UserDeleteRepository(loginEmail)
+}
 
 func hashPassword(password string) string{
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
