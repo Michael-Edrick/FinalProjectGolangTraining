@@ -11,12 +11,12 @@ import (
 
 var mySecretKey = []byte("secretkey")
 
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(id int) (string, error) {
 	var mySigningKey = []byte("secretkey")
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	claims["email"] = email
+	claims["userid"] = id
 	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)
@@ -30,10 +30,10 @@ func GenerateJWT(email string) (string, error) {
 
 func ParseJWT(header string)(jwt.MapClaims, error){
 	splitToken := strings.Split(header, "Bearer ")
-	header = splitToken[1]
 	if len(splitToken) < 2{
 		return nil, errors.New("token error")
 	}
+	header = splitToken[1]
 	fmt.Printf("token:%v\n",header)
 	token, err := jwt.Parse(header, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:

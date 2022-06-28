@@ -4,9 +4,16 @@ import (
 	"time"
 )
 
+type UserServiceInterface interface {
+	UserRegisterService(user User)(User, error)
+	UserLoginService(user User)(string, error)
+	UserUpdateService(user User)(User, error)
+	UserDeleteService(user User)(error)
+}
+
 type UserRepositoryInterface interface{
 	UserRegisterRepository(newuser User)(User, error)
-	UserLoginRepository(newlogin User)(string, error)
+	UserLoginRepository(newlogin User)(User, error)
 	UserUpdateRepository(updateuser User)(User, error)
 	UserDeleteRepository(deleteuser User)(error)
 	UserDeletePhotoRepository(deleteuser User)(error)
@@ -15,20 +22,13 @@ type UserRepositoryInterface interface{
 	GetUserId(loginEmail User)(int, error)
 }
 
-type UserServiceInterface interface {
-	RegisterService(user User)(User, error)
-	LoginService(user User)(string, error)
-	UserUpdateService(user User)(User, error)
-	UserDeleteService(user User)(error)
-}
-
 type User struct{
 	Id       int	`json:"id"`
 	Username string `json:"username"`
 	Email    string	`json:"email"`
 	Password string `json:"password"`
 	Age      int	`json:"age"`
-	Created_at time.Time	`json:"-"`
+	Created_at time.Time	`json:"created_at"`
 	Updated_at time.Time	`json:"updated_at"`
 }
 
@@ -37,6 +37,15 @@ type UserRegister struct{
 	RegisterEmail string `json:"email"`
 	RegisterId int `json:"id"`
 	RegisterUsername string `json:"username"`
+}
+
+type UserUpdate struct{
+	Id       int	`json:"id"`
+	Username string `json:"username"`
+	Email    string	`json:"email"`
+	Password string `json:"password"`
+	Age      int	`json:"age"`
+	Updated_at time.Time	`json:"updated_at"`
 }
 
 type Token struct{

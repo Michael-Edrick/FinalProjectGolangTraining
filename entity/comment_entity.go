@@ -2,6 +2,14 @@ package entity
 
 import "time"
 
+type CommentServiceInterface interface{
+	
+}
+
+type CommentRepositoryInterface interface{
+
+}
+
 type Comment struct {
 	Id         uint
 	User_id    uint

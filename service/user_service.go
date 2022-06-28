@@ -20,7 +20,7 @@ func NewUserService(userRepository entity.UserRepositoryInterface) entity.UserSe
 	}
 }
 
-func (s UserService) RegisterService(newUser entity.User) (entity.User, error) {
+func (s UserService)UserRegisterService(newUser entity.User) (entity.User, error) {
 	//validasi register
 	email := newUser.Email
 	_,err := mail.ParseAddress(email)
@@ -45,18 +45,19 @@ func (s UserService) RegisterService(newUser entity.User) (entity.User, error) {
 	return s.userRepository.UserRegisterRepository(newUser)
 }
 
-func (s UserService)LoginService(newLogin entity.User) (string, error){
-	pass, err := s.userRepository.UserLoginRepository(newLogin)
+func (s UserService)UserLoginService(newLogin entity.User) (string, error){
+	var data entity.User
+	data, err := s.userRepository.UserLoginRepository(newLogin)
 	//validasi check email dan password
 	if err != nil{
 		return "", err
 	}
-	err = checkPassword(pass, newLogin.Password)
+	err = checkPassword(data.Password, newLogin.Password)
 	if err != nil{
 		return "", errors.New("password didn't match")
 	}
 	jwtToken := entity.Token{}
-	token, _ := utils.GenerateJWT(newLogin.Email)
+	token, _ := utils.GenerateJWT(data.Id)
 	jwtToken.JwtToken = token
 	return jwtToken.JwtToken, nil
 }
@@ -75,21 +76,21 @@ func (s UserService)UserUpdateService(updateUser entity.User)(entity.User, error
 	}
 	return s.userRepository.UserUpdateRepository(updateUser)
 }
-func (s UserService)UserDeleteService(loginEmail entity.User)error{
-	loginEmail.Id ,_ = s.userRepository.GetUserId(loginEmail)
-	err := s.userRepository.UserDeletePhotoRepository(loginEmail)
+func (s UserService)UserDeleteService(loginUser entity.User)error{
+	
+	err := s.userRepository.UserDeletePhotoRepository(loginUser)
 	if err!=nil{
 		return errors.New("something went wrong")
 	}
-	err = s.userRepository.UserDeleteCommentRepository(loginEmail)
+	err = s.userRepository.UserDeleteCommentRepository(loginUser)
 	if err!=nil{
 		return errors.New("something went wrong")
 	}
-	err = s.userRepository.UserDeleteSocMedRepository(loginEmail)
+	err = s.userRepository.UserDeleteSocMedRepository(loginUser)
 	if err!=nil{
 		return errors.New("something went wrong")
 	}
-	err = s.userRepository.UserDeleteRepository(loginEmail)
+	err = s.userRepository.UserDeleteRepository(loginUser)
 	if err!=nil{
 		return errors.New("something went wrong")
 	}

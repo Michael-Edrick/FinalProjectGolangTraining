@@ -28,6 +28,11 @@ func main(){
 	userService := service.NewUserService(userRepository)
 	handler.NewAuthHandler(r, userService)
 	handler.NewUserHandler(r, userService)
+
+	photoRepository := repository.NewPhotoRepository(db)
+	photoService := service.NewPhotoService(photoRepository)
+	handler.NewPhotoHandler(r, photoService)
+
 	
 	srv := &http.Server{
 		Handler: r,

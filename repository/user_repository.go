@@ -60,31 +60,53 @@ func (r userRepository)UserRegisterRepository(newUser entity.User) (entity.User,
 	return newUser, nil 
 }
 
-func (r userRepository)UserLoginRepository(newLogin entity.User) (string, error) {
+func (r userRepository)UserLoginRepository(newLogin entity.User) (entity.User, error) {
 	var data entity.User
 	sqlStatement := `
-	SELECT password FROM users 
+	SELECT password, userId FROM users 
 	WHERE email = $1
 	`
 	rows, err := r.db.Query(sqlStatement, newLogin.Email)
 	if err != nil {
-		return "", err
+		return entity.User{}, err
 	}
 	//validate email exists by rows
 	for rows.Next() {
-		err = rows.Scan(&data.Password)
+		err = rows.Scan(&data.Password, &data.Id)
 
 		if err!= nil{
-			return "", err
+			return entity.User{}, err
 		}
 	}
 	if data.Password == "" {
-		return "", errors.New("email doesn't registered")
+		return entity.User{}, errors.New("email doesn't registered")
 	}
-	return data.Password, nil
+	return data, nil
 }
 
 func (r userRepository)UserUpdateRepository(updateUser entity.User)(entity.User, error){
+	sqlEmailUnique :=`
+	SELECT userId FROM users WHERE email = $1
+	`
+	rows, err := r.db.Query(sqlEmailUnique, updateUser.Email)
+    if err != nil {
+		return entity.User{}, err
+	}
+	if rows.Next() {
+        return entity.User{}, errors.New("email already registered")
+    }
+
+	sqlUsernameUnique :=`
+	SELECT userId FROM users WHERE username = $1
+	`
+	rows, err = r.db.Query(sqlUsernameUnique, updateUser.Username)
+    if err != nil {
+		return entity.User{}, err
+	}
+	if rows.Next() {
+        return entity.User{}, errors.New("username already exists")
+    }
+	
 	sqlStatement := `
 	UPDATE users
 	SET username = $1 , email = $2, updated_at = $3
@@ -92,7 +114,7 @@ func (r userRepository)UserUpdateRepository(updateUser entity.User)(entity.User,
 	RETURNING userId, email, username, age, updated_at
 	`
 	fmt.Printf("%+v\n",updateUser)
-	rows, err := r.db.Query(sqlStatement, updateUser.Username, updateUser.Email, time.Now().Local(), updateUser.Id)
+	rows, err = r.db.Query(sqlStatement, updateUser.Username, updateUser.Email, time.Now().Local(), updateUser.Id)
 	if err != nil {
 		return entity.User{}, err
 	}
@@ -106,13 +128,13 @@ func (r userRepository)UserUpdateRepository(updateUser entity.User)(entity.User,
 	return updateUser, nil
 }
 
-func (r userRepository)UserDeleteRepository(loginEmail entity.User)error{
+func (r userRepository)UserDeleteRepository(loginUser entity.User)error{
 	sqlStatement :=`
 	DELETE FROM users
 	WHERE userId = $1
 	`
 
-	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	_, err := r.db.Exec(sqlStatement, loginUser.Id)
 	if err != nil {
 		return err
 	}
@@ -120,39 +142,39 @@ func (r userRepository)UserDeleteRepository(loginEmail entity.User)error{
 	return err
 }
 
-func (r userRepository)UserDeletePhotoRepository(loginEmail entity.User)error{
+func (r userRepository)UserDeletePhotoRepository(loginUser entity.User)error{
 	sqlStatement :=`
 	DELETE FROM photos
 	WHERE user_id = $1
 	`
 
-	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	_, err := r.db.Exec(sqlStatement, loginUser.Id)
 	if err != nil {
 		return err
 	}
 	
 	return err
 }
-func (r userRepository)UserDeleteCommentRepository(loginEmail entity.User)error{
+func (r userRepository)UserDeleteCommentRepository(loginUser entity.User)error{
 	sqlStatement :=`
 	DELETE FROM comments
 	WHERE user_id = $1
 	`
 
-	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	_, err := r.db.Exec(sqlStatement, loginUser.Id)
 	if err != nil {
 		return err
 	}
 	
 	return err
 }
-func (r userRepository)UserDeleteSocMedRepository(loginEmail entity.User)error{
+func (r userRepository)UserDeleteSocMedRepository(loginUser entity.User)error{
 	sqlStatement :=`
 	DELETE FROM socialmedia
 	WHERE user_id = $1
 	`
 
-	_, err := r.db.Exec(sqlStatement, loginEmail.Id)
+	_, err := r.db.Exec(sqlStatement, loginUser.Id)
 	if err != nil {
 		return err
 	}

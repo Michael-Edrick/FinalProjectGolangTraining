@@ -2,7 +2,7 @@ package handler
 
 import (
 	"FinalProject/entity"
-	"FinalProject/mapping"
+	"FinalProject/mapper"
 	"encoding/json"
 	"net/http"
 
@@ -35,7 +35,7 @@ func (h AuthHandler) userRegisterHandler (w http.ResponseWriter, r *http.Request
 			return
 		}
 		//masuk ke user service
-		res, err := h.userService.RegisterService(newUser)
+		res, err := h.userService.UserRegisterService(newUser)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -43,7 +43,7 @@ func (h AuthHandler) userRegisterHandler (w http.ResponseWriter, r *http.Request
 			return
 		}
 		//keluarin response
-		response := mapping.RegisterMapping(res)
+		response := mapper.RegisterMapper(res)
 		jsonData, _ := json.Marshal(&response)
 		w.Header().Add("Content-Type", "application/json")
 		w.Write(jsonData)
@@ -59,15 +59,14 @@ func (h AuthHandler)userLoginHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("error"))
 			return
 		}
-		//autentikasi
-		jwtToken, err := h.userService.LoginService(newLogin) //(newLogin)
+		//autentikasi + generate jwt
+		jwtToken, err := h.userService.UserLoginService(newLogin) //(newLogin)
 		if err !=nil {
 			errorMessage, _ := json.Marshal(err.Error())
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write(errorMessage)
 			return
 		} 
-		//generate jwt token
 		response := map[string]string{
 			"token": string(jwtToken),
 		}

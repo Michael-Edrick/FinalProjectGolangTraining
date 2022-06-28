@@ -2,6 +2,7 @@ package handler
 
 import (
 	"FinalProject/entity"
+	"FinalProject/mapper"
 	"FinalProject/middleware"
 	"FinalProject/utils"
 	"encoding/json"
@@ -45,6 +46,7 @@ func (h UserHandler) userUpdateHandler (w http.ResponseWriter, r *http.Request){
 			w.Write([]byte("error"))
 			return
 		}
+		//convert param
 		if id != "" {
 			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
@@ -62,7 +64,8 @@ func (h UserHandler) userUpdateHandler (w http.ResponseWriter, r *http.Request){
 					return
 				}
 				//keluarin response
-				jsonData, _ :=json.Marshal(&res)
+				response := mapper.UpdateMapper(res)
+				jsonData, _ :=json.Marshal(&response)
 				w.Header().Add("Content-Type", "application/json")
 				w.Write(jsonData)
 			}
@@ -72,7 +75,7 @@ func (h UserHandler) userUpdateHandler (w http.ResponseWriter, r *http.Request){
 
 func (h UserHandler)userDeleteHandler(w http.ResponseWriter, r *http.Request){
 	if r.Method == "DELETE" {
-
+		//get claims
 		header:= r.Header.Get("Authorization")
 		claims, err := utils.ParseJWT(header)
 		if err != nil {
@@ -83,9 +86,9 @@ func (h UserHandler)userDeleteHandler(w http.ResponseWriter, r *http.Request){
 		}
 		
 		//masuk ke user service
-		var loginEmail entity.User
-		loginEmail.Email = claims["email"].(string)
-		err = h.userService.UserDeleteService(loginEmail)
+		var loginUser entity.User
+		loginUser.Id= int(claims["userid"].(float64))
+		err = h.userService.UserDeleteService(loginUser)
 		if err == nil {
 			response := map[string]string{
 				"message": "Your account has been successfully deleted",
