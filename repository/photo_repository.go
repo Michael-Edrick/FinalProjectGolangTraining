@@ -16,13 +16,13 @@ func NewPhotoRepository(db *sql.DB) entity.PhotoRepositoryInterface {
 	}
 }
 
-func (r photoRepository)PhotoPostRepository(postPhoto entity.Photo, loginUser entity.User)(entity.Photo, error){
-	sqlStatement :=`
+func (r photoRepository) PhotoPostRepository(postPhoto entity.Photo) (entity.Photo, error) {
+	sqlStatement := `
 	INSERT INTO photos (title, caption, photo_url, user_id, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING photoId, user_id, created_at
 	`
-	rows, err := r.db.Query(sqlStatement, postPhoto.Title, postPhoto.Caption, postPhoto.Photo_url, loginUser.Id, time.Now().Local(), time.Now().Local())
+	rows, err := r.db.Query(sqlStatement, postPhoto.Title, postPhoto.Caption, postPhoto.Photo_url, postPhoto.User_id, time.Now().Local(), time.Now().Local())
 	if err != nil {
 		return entity.Photo{}, err
 	}
@@ -35,11 +35,11 @@ func (r photoRepository)PhotoPostRepository(postPhoto entity.Photo, loginUser en
 	return postPhoto, nil
 }
 
-func (r photoRepository)PhotoGetRepository(loginUser entity.User)([]entity.PhotoGet, error){
-	photos := []entity.PhotoGet{}
-	sqlStatement :=`
+func (r photoRepository) PhotoGetRepository(getPhotos entity.Photo) ([]entity.PhotoGet, error) {
+	var photos []entity.PhotoGet
+	sqlStatement := `
 	SELECT 
-		p.photoid,
+		p.photoId,
 		p.title,
 		p.caption, 
 		p.photo_url,
@@ -53,7 +53,7 @@ func (r photoRepository)PhotoGetRepository(loginUser entity.User)([]entity.Photo
 	ON (p.user_id = u.userId)
 	WHERE u.userId = $1
 	`
-	rows, err := r.db.Query(sqlStatement, loginUser.Id)
+	rows, err := r.db.Query(sqlStatement, getPhotos.User_id)
 	if err != nil {
 		return []entity.PhotoGet{}, err
 	}
@@ -65,12 +65,11 @@ func (r photoRepository)PhotoGetRepository(loginUser entity.User)([]entity.Photo
 		}
 		photos = append(photos, photoGet)
 	}
-
 	return photos, nil
 }
 
-func (r photoRepository)PhotoUpdateRepository(updatePhoto entity.Photo)(entity.Photo, error){
-	sqlStatement :=`
+func (r photoRepository) PhotoUpdateRepository(updatePhoto entity.Photo) (entity.Photo, error) {
+	sqlStatement := `
 	UPDATE photos 
 	SET title = $1, caption = $2, photo_url = $3, updated_at = $4
 	WHERE photoId = $5
@@ -89,16 +88,14 @@ func (r photoRepository)PhotoUpdateRepository(updatePhoto entity.Photo)(entity.P
 	return updatePhoto, nil
 }
 
-func (r photoRepository)PhotoDeleteRepository(deletePhoto entity.Photo)error{
-	sqlStatement :=`
+func (r photoRepository) PhotoDeleteRepository(deletePhoto entity.Photo) error {
+	sqlStatement := `
 	DELETE FROM photos
 	WHERE photoId = $1
 	`
-
 	_, err := r.db.Exec(sqlStatement, deletePhoto.Id)
 	if err != nil {
 		return err
 	}
-	
 	return err
 }

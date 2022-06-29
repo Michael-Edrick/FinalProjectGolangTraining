@@ -1,5 +1,11 @@
 package entity
 
+type SocialMediaServiceInterface interface {
+}
+
+type SocialMediaRepositoryInterface interface {
+}
+
 type SocialMedia struct {
 	Id               uint
 	Name             string

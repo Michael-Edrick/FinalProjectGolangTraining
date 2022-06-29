@@ -2,7 +2,7 @@ package mapper
 
 import "FinalProject/entity"
 
-func RegisterMapper(response entity.User) entity.UserRegister{
+func RegisterMapper(response entity.User) entity.UserRegister {
 	var userRegister entity.UserRegister
 	userRegister.RegisterAge = response.Age
 	userRegister.RegisterEmail = response.Email
@@ -11,7 +11,7 @@ func RegisterMapper(response entity.User) entity.UserRegister{
 	return userRegister
 }
 
-func UpdateMapper(response entity.User)entity.UserUpdate{
+func UpdateMapper(response entity.User) entity.UserUpdate {
 	var UserUpdate entity.UserUpdate
 	UserUpdate.Id = response.Id
 	UserUpdate.Username = response.Username

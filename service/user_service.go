@@ -20,23 +20,23 @@ func NewUserService(userRepository entity.UserRepositoryInterface) entity.UserSe
 	}
 }
 
-func (s UserService)UserRegisterService(newUser entity.User) (entity.User, error) {
+func (s UserService) UserRegisterService(newUser entity.User) (entity.User, error) {
 	//validasi register
 	email := newUser.Email
-	_,err := mail.ParseAddress(email)
-	if newUser.Email == ""{
-		return entity.User{}, errors.New("email must be filled")
-	}
-	if err != nil{
+	_, err := mail.ParseAddress(email)
+	if err != nil {
 		return entity.User{}, errors.New("email not valid")
 	}
-	if newUser.Username == ""{
+	if newUser.Email == "" {
+		return entity.User{}, errors.New("email must be filled")
+	}
+	if newUser.Username == "" {
 		return entity.User{}, errors.New("username must be filled")
 	}
-	if newUser.Password == "" || len(newUser.Password) < 6{
+	if newUser.Password == "" || len(newUser.Password) < 6 {
 		return entity.User{}, errors.New("password must be filled and must be longer than 6 characters")
 	}
-	if newUser.Age <= 8{
+	if newUser.Age <= 8 {
 		return entity.User{}, errors.New("age must not below 8")
 	}
 
@@ -45,15 +45,15 @@ func (s UserService)UserRegisterService(newUser entity.User) (entity.User, error
 	return s.userRepository.UserRegisterRepository(newUser)
 }
 
-func (s UserService)UserLoginService(newLogin entity.User) (string, error){
+func (s UserService) UserLoginService(newLogin entity.User) (string, error) {
 	var data entity.User
 	data, err := s.userRepository.UserLoginRepository(newLogin)
 	//validasi check email dan password
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	err = checkPassword(data.Password, newLogin.Password)
-	if err != nil{
+	if err != nil {
 		return "", errors.New("password didn't match")
 	}
 	jwtToken := entity.Token{}
@@ -62,42 +62,42 @@ func (s UserService)UserLoginService(newLogin entity.User) (string, error){
 	return jwtToken.JwtToken, nil
 }
 
-func (s UserService)UserUpdateService(updateUser entity.User)(entity.User, error){
+func (s UserService) UserUpdateService(updateUser entity.User) (entity.User, error) {
 	email := updateUser.Email
-	_,err := mail.ParseAddress(email)
-	if updateUser.Email == ""{
-		return entity.User{}, errors.New("email must be filled")
-	}
-	if err != nil{
+	_, err := mail.ParseAddress(email)
+	if err != nil {
 		return entity.User{}, errors.New("email not valid")
 	}
-	if updateUser.Username == ""{
+	if updateUser.Email == "" {
+		return entity.User{}, errors.New("email must be filled")
+	}
+	if updateUser.Username == "" {
 		return entity.User{}, errors.New("username must be filled")
 	}
 	return s.userRepository.UserUpdateRepository(updateUser)
 }
-func (s UserService)UserDeleteService(loginUser entity.User)error{
-	
+func (s UserService) UserDeleteService(loginUser entity.User) error {
+
 	err := s.userRepository.UserDeletePhotoRepository(loginUser)
-	if err!=nil{
+	if err != nil {
 		return errors.New("something went wrong")
 	}
 	err = s.userRepository.UserDeleteCommentRepository(loginUser)
-	if err!=nil{
+	if err != nil {
 		return errors.New("something went wrong")
 	}
 	err = s.userRepository.UserDeleteSocMedRepository(loginUser)
-	if err!=nil{
+	if err != nil {
 		return errors.New("something went wrong")
 	}
 	err = s.userRepository.UserDeleteRepository(loginUser)
-	if err!=nil{
+	if err != nil {
 		return errors.New("something went wrong")
 	}
 	return nil
 }
 
-func hashPassword(password string) string{
+func hashPassword(password string) string {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return ""
@@ -106,13 +106,10 @@ func hashPassword(password string) string{
 	return string(hashedPassword)
 }
 
-func checkPassword(dbPassword string, password string) error{
+func checkPassword(dbPassword string, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password))
 	if err != nil {
 		return err
-	} 
+	}
 	return nil
 }
-
-
-

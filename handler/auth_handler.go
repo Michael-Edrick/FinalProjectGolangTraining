@@ -9,22 +9,22 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type AuthHandler struct{
-	r *mux.Router
+type AuthHandler struct {
+	r           *mux.Router
 	userService entity.UserServiceInterface
 }
 
-func NewAuthHandler(r *mux.Router, userService entity.UserServiceInterface){
+func NewAuthHandler(r *mux.Router, userService entity.UserServiceInterface) {
 	handler := AuthHandler{
-		r : r,
-		userService: userService, 
+		r:           r,
+		userService: userService,
 	}
 	r.HandleFunc("/users/register", handler.userRegisterHandler)
 	r.HandleFunc("/users/login", handler.userLoginHandler)
-	
+
 }
 
-func (h AuthHandler) userRegisterHandler (w http.ResponseWriter, r *http.Request) {
+func (h AuthHandler) userRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		//baca dr body
 		decoder := json.NewDecoder(r.Body)
@@ -50,7 +50,7 @@ func (h AuthHandler) userRegisterHandler (w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (h AuthHandler)userLoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h AuthHandler) userLoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		decoder := json.NewDecoder(r.Body)
 		var newLogin entity.User
@@ -61,12 +61,12 @@ func (h AuthHandler)userLoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		//autentikasi + generate jwt
 		jwtToken, err := h.userService.UserLoginService(newLogin) //(newLogin)
-		if err !=nil {
+		if err != nil {
 			errorMessage, _ := json.Marshal(err.Error())
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write(errorMessage)
 			return
-		} 
+		}
 		response := map[string]string{
 			"token": string(jwtToken),
 		}

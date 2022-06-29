@@ -2,7 +2,7 @@ package mapper
 
 import "FinalProject/entity"
 
-func PostPhotoMapper(response entity.Photo)entity.PhotoPost{
+func PostPhotoMapper(response entity.Photo) entity.PhotoPost {
 	var photoPost entity.PhotoPost
 	photoPost.Id = response.Id
 	photoPost.Title = response.Title
@@ -13,7 +13,7 @@ func PostPhotoMapper(response entity.Photo)entity.PhotoPost{
 	return photoPost
 }
 
-func UpdatePhotoMapper(response entity.Photo)entity.PhotoUpdate{
+func UpdatePhotoMapper(response entity.Photo) entity.PhotoUpdate {
 	var photoUpdate entity.PhotoUpdate
 	photoUpdate.Id = response.Id
 	photoUpdate.Title = response.Title

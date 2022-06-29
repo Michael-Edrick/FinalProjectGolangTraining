@@ -16,12 +16,11 @@ import (
 
 var PORT = ":8088"
 
-
-func main(){
+func main() {
 
 	db, err := connection.InitDatabase()
-	if err != nil{
-		log.Fatalf("%v\n",err)
+	if err != nil {
+		log.Fatalf("%v\n", err)
 	}
 	r := mux.NewRouter()
 	userRepository := repository.NewUserRepository(db)
@@ -33,18 +32,20 @@ func main(){
 	photoService := service.NewPhotoService(photoRepository)
 	handler.NewPhotoHandler(r, photoService)
 
-	
+	commentRepository := repository.NewCommentRepository(db)
+	commentService := service.NewCommentService(commentRepository)
+	handler.NewCommentHandler(r, commentService)
+
+	socialMediaRepository := repository.NewSocialMediaRepository(db)
+	socialMediaService := service.NewSocialMediaService(socialMediaRepository)
+	handler.NewSocialMediaHandler(r, socialMediaService)
+
 	srv := &http.Server{
-		Handler: r,
-		Addr:    fmt.Sprintf("127.0.0.1%s", PORT),
+		Handler:      r,
+		Addr:         fmt.Sprintf("127.0.0.1%s", PORT),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
 	log.Fatal(srv.ListenAndServe())
 }
-
-
-
-
-
