@@ -6,7 +6,6 @@ import (
 	"FinalProject/middleware"
 	"FinalProject/utils"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -32,7 +31,6 @@ func NewUserHandler(r *mux.Router, userService entity.UserServiceInterface) {
 func (h UserHandler) userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	param := mux.Vars(r)
 	id := param["Id"]
-	fmt.Printf("%v\n", r.Method)
 	if r.Method == "PUT" {
 		//baca dr body
 		decoder := json.NewDecoder(r.Body)
@@ -44,7 +42,6 @@ func (h UserHandler) userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		//convert param
 		if id != "" {
-			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
 				w.Write([]byte("error"))

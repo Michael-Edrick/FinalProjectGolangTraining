@@ -6,7 +6,6 @@ import (
 	"FinalProject/middleware"
 	"FinalProject/utils"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -104,7 +103,6 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 		}
 		//convert param
 		if id != "" {
-			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
 				w.Write([]byte("error"))
@@ -130,7 +128,6 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 		var deleteComment entity.Comment
 		//convert param
 		if id != "" {
-			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
 				w.Write([]byte("error"))

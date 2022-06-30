@@ -6,7 +6,6 @@ import (
 	"FinalProject/middleware"
 	"FinalProject/utils"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -103,7 +102,6 @@ func (h PhotoHandler) photoUpdateDeleteHandler(w http.ResponseWriter, r *http.Re
 		}
 		//convert param
 		if id != "" {
-			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
 				w.Write([]byte("error"))
@@ -130,7 +128,6 @@ func (h PhotoHandler) photoUpdateDeleteHandler(w http.ResponseWriter, r *http.Re
 		var deletePhoto entity.Photo
 		//convert param
 		if id != "" {
-			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
 				w.Write([]byte("error"))

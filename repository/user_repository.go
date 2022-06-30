@@ -4,7 +4,6 @@ import (
 	"FinalProject/entity"
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -110,7 +109,6 @@ func (r userRepository) UserUpdateRepository(updateUser *entity.User) (*entity.U
 	WHERE userId = $4
 	RETURNING userId, email, username, age, updated_at
 	`
-	fmt.Printf("%+v\n", updateUser)
 	rows, err = r.db.Query(sqlStatement, updateUser.Username, updateUser.Email, time.Now().Local(), updateUser.Id)
 	if err != nil {
 		return nil, err

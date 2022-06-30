@@ -132,7 +132,6 @@ func (h SocialMediaHandler) socialMediaUpdateDeleteHandler(w http.ResponseWriter
 		var deleteSocialMedia entity.SocialMedia
 		//convert param
 		if id != "" {
-			fmt.Println(id)
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
 				w.Write([]byte("error"))

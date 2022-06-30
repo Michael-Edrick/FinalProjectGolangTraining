@@ -45,7 +45,7 @@ func ParseJWT(header string) (jwt.MapClaims, error) {
 		return mySecretKey, nil
 	})
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims["foo"], claims["nbf"])
+		// fmt.Println(claims["foo"], claims["nbf"])
 		return claims, nil
 	} else {
 		fmt.Println(err)
