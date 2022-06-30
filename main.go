@@ -5,6 +5,7 @@ import (
 	"FinalProject/handler"
 	"FinalProject/repository"
 	"FinalProject/service"
+	"FinalProject/utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,11 +15,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var PORT = ":8088"
-
 func main() {
-
-	db, err := connection.InitDatabase()
+	config := utils.InitConfig()
+	db, err := connection.InitDatabase(config)
 	if err != nil {
 		log.Fatalf("%v\n", err)
 	}
@@ -42,7 +41,7 @@ func main() {
 
 	srv := &http.Server{
 		Handler:      r,
-		Addr:         fmt.Sprintf("127.0.0.1%s", PORT),
+		Addr:         fmt.Sprintf("127.0.0.1:%s", config.Port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

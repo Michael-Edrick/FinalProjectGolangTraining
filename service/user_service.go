@@ -20,24 +20,24 @@ func NewUserService(userRepository entity.UserRepositoryInterface) entity.UserSe
 	}
 }
 
-func (s UserService) UserRegisterService(newUser entity.User) (entity.User, error) {
+func (s UserService) UserRegisterService(newUser *entity.User) (*entity.User, error) {
 	//validasi register
 	email := newUser.Email
 	_, err := mail.ParseAddress(email)
 	if err != nil {
-		return entity.User{}, errors.New("email not valid")
+		return nil, errors.New("email not valid")
 	}
 	if newUser.Email == "" {
-		return entity.User{}, errors.New("email must be filled")
+		return nil, errors.New("email must be filled")
 	}
 	if newUser.Username == "" {
-		return entity.User{}, errors.New("username must be filled")
+		return nil, errors.New("username must be filled")
 	}
 	if newUser.Password == "" || len(newUser.Password) < 6 {
-		return entity.User{}, errors.New("password must be filled and must be longer than 6 characters")
+		return nil, errors.New("password must be filled and must be longer than 6 characters")
 	}
 	if newUser.Age <= 8 {
-		return entity.User{}, errors.New("age must not below 8")
+		return nil, errors.New("age must not below 8")
 	}
 
 	//hash password
@@ -45,8 +45,8 @@ func (s UserService) UserRegisterService(newUser entity.User) (entity.User, erro
 	return s.userRepository.UserRegisterRepository(newUser)
 }
 
-func (s UserService) UserLoginService(newLogin entity.User) (string, error) {
-	var data entity.User
+func (s UserService) UserLoginService(newLogin *entity.User) (string, error) {
+	var data *entity.User
 	data, err := s.userRepository.UserLoginRepository(newLogin)
 	//validasi check email dan password
 	if err != nil {
@@ -62,21 +62,21 @@ func (s UserService) UserLoginService(newLogin entity.User) (string, error) {
 	return jwtToken.JwtToken, nil
 }
 
-func (s UserService) UserUpdateService(updateUser entity.User) (entity.User, error) {
+func (s UserService) UserUpdateService(updateUser *entity.User) (*entity.User, error) {
 	email := updateUser.Email
 	_, err := mail.ParseAddress(email)
 	if err != nil {
-		return entity.User{}, errors.New("email not valid")
+		return nil, errors.New("email not valid")
 	}
 	if updateUser.Email == "" {
-		return entity.User{}, errors.New("email must be filled")
+		return nil, errors.New("email must be filled")
 	}
 	if updateUser.Username == "" {
-		return entity.User{}, errors.New("username must be filled")
+		return nil, errors.New("username must be filled")
 	}
 	return s.userRepository.UserUpdateRepository(updateUser)
 }
-func (s UserService) UserDeleteService(loginUser entity.User) error {
+func (s UserService) UserDeleteService(loginUser *entity.User) error {
 
 	err := s.userRepository.UserDeletePhotoRepository(loginUser)
 	if err != nil {

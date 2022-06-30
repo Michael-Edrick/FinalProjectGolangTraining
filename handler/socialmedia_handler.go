@@ -48,9 +48,9 @@ func (h SocialMediaHandler) socialMediaPostGetHandler(w http.ResponseWriter, r *
 			w.Write(res)
 			return
 		}
-		postSocialMedia.User_id = int(claims["userid"].(float64))
+		postSocialMedia.UserId = int(claims["userid"].(float64))
 		//masuk ke social media service
-		res, err := h.socialMediaService.SocialMediaPostService(postSocialMedia)
+		res, err := h.socialMediaService.SocialMediaPostService(&postSocialMedia)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -75,8 +75,8 @@ func (h SocialMediaHandler) socialMediaPostGetHandler(w http.ResponseWriter, r *
 		}
 		//masuk ke social media service
 		var getSocialMedias entity.SocialMedia
-		getSocialMedias.User_id = int(claims["userid"].(float64))
-		res, err := h.socialMediaService.SocialMediaGetService(getSocialMedias)
+		getSocialMedias.UserId = int(claims["userid"].(float64))
+		res, err := h.socialMediaService.SocialMediaGetService(&getSocialMedias)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -114,7 +114,7 @@ func (h SocialMediaHandler) socialMediaUpdateDeleteHandler(w http.ResponseWriter
 				updateSocialMedia.Id = idInt
 			}
 			//masuk ke social media service
-			res, err := h.socialMediaService.SocialMediaUpdateService(updateSocialMedia)
+			res, err := h.socialMediaService.SocialMediaUpdateService(&updateSocialMedia)
 			if err != nil {
 				res, _ := json.Marshal(err.Error())
 				w.Header().Add("Content-Type", "application/json")
@@ -140,7 +140,7 @@ func (h SocialMediaHandler) socialMediaUpdateDeleteHandler(w http.ResponseWriter
 			} else {
 				deleteSocialMedia.Id = idInt
 				//masuk ke social media service
-				err = h.socialMediaService.SocialMediaDeleteService(deleteSocialMedia)
+				err = h.socialMediaService.SocialMediaDeleteService(&deleteSocialMedia)
 				if err == nil {
 					response := map[string]string{
 						"message": "Your social media has been successfully deleted",

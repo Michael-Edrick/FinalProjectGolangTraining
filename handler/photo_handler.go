@@ -48,9 +48,9 @@ func (h PhotoHandler) photoPostGetHandler(w http.ResponseWriter, r *http.Request
 			w.Write(res)
 			return
 		}
-		postPhoto.User_id = int(claims["userid"].(float64))
+		postPhoto.UserId = int(claims["userid"].(float64))
 		//masuk ke photo service
-		res, err := h.photoService.PhotoPostService(postPhoto)
+		res, err := h.photoService.PhotoPostService(&postPhoto)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -75,8 +75,8 @@ func (h PhotoHandler) photoPostGetHandler(w http.ResponseWriter, r *http.Request
 		}
 		//masuk ke photo service
 		var getPhotos entity.Photo
-		getPhotos.User_id = int(claims["userid"].(float64))
-		res, err := h.photoService.PhotoGetService(getPhotos)
+		getPhotos.UserId = int(claims["userid"].(float64))
+		res, err := h.photoService.PhotoGetService(&getPhotos)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -111,7 +111,7 @@ func (h PhotoHandler) photoUpdateDeleteHandler(w http.ResponseWriter, r *http.Re
 			} else {
 				updatePhoto.Id = idInt
 				//masuk ke photo service
-				res, err := h.photoService.PhotoUpdateService(updatePhoto)
+				res, err := h.photoService.PhotoUpdateService(&updatePhoto)
 				if err != nil {
 					res, _ := json.Marshal(err.Error())
 					w.Header().Add("Content-Type", "application/json")
@@ -138,7 +138,7 @@ func (h PhotoHandler) photoUpdateDeleteHandler(w http.ResponseWriter, r *http.Re
 			} else {
 				deletePhoto.Id = idInt
 				//masuk ke photo service
-				err = h.photoService.PhotoDeleteService(deletePhoto)
+				err = h.photoService.PhotoDeleteService(&deletePhoto)
 				if err == nil {
 					response := map[string]string{
 						"message": "Your photo has been successfully deleted",

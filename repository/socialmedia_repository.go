@@ -16,26 +16,26 @@ func NewSocialMediaRepository(db *sql.DB) entity.SocialMediaRepositoryInterface 
 	}
 }
 
-func (r socialMediaRepository) SocialMediaPostRepository(postSocialMedia entity.SocialMedia) (entity.SocialMedia, error) {
+func (r socialMediaRepository) SocialMediaPostRepository(postSocialMedia *entity.SocialMedia) (*entity.SocialMedia, error) {
 	sqlStatement := `
 	INSERT INTO socialmedia (name, social_media_url, user_id, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	RETURNING scId, created_at
 	`
-	rows, err := r.db.Query(sqlStatement, postSocialMedia.Name, postSocialMedia.Social_media_url, postSocialMedia.User_id, time.Now().Local(), time.Now().Local())
+	rows, err := r.db.Query(sqlStatement, postSocialMedia.Name, postSocialMedia.SocialMediaUrl, postSocialMedia.UserId, time.Now().Local(), time.Now().Local())
 	if err != nil {
-		return entity.SocialMedia{}, err
+		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&postSocialMedia.Id, &postSocialMedia.Created_at)
+		err = rows.Scan(&postSocialMedia.Id, &postSocialMedia.CreatedAt)
 		if err != nil {
-			return entity.SocialMedia{}, err
+			return nil, err
 		}
 	}
 	return postSocialMedia, nil
 }
 
-func (r socialMediaRepository) SocialMediaGetRepository(getSocialMedia entity.SocialMedia) ([]entity.SocialMediaGetData, error) {
+func (r socialMediaRepository) SocialMediaGetRepository(getSocialMedia *entity.SocialMedia) ([]entity.SocialMediaGetData, error) {
 	var response []entity.SocialMediaGetData
 	sqlStatement := `
 		SELECT 
@@ -53,13 +53,13 @@ func (r socialMediaRepository) SocialMediaGetRepository(getSocialMedia entity.So
 	INNER JOIN photos as p ON (u.userId = p.user_id)
 	where u.userId = $1 AND p.title = 'profile-image.com'
 	`
-	rows, err := r.db.Query(sqlStatement, getSocialMedia.User_id)
+	rows, err := r.db.Query(sqlStatement, getSocialMedia.UserId)
 	if err != nil {
 		return []entity.SocialMediaGetData{}, err
 	}
 	for rows.Next() {
 		var socialMediaGetData entity.SocialMediaGetData
-		err = rows.Scan(&socialMediaGetData.Id, &socialMediaGetData.Name, &socialMediaGetData.Social_media_url, &socialMediaGetData.User_id, &socialMediaGetData.Created_at, &socialMediaGetData.Updated_at, &socialMediaGetData.User.Id, &socialMediaGetData.User.Username, &socialMediaGetData.User.Profile_image_url)
+		err = rows.Scan(&socialMediaGetData.Id, &socialMediaGetData.Name, &socialMediaGetData.SocialMediaUrl, &socialMediaGetData.UserId, &socialMediaGetData.CreatedAt, &socialMediaGetData.UpdatedAt, &socialMediaGetData.User.Id, &socialMediaGetData.User.Username, &socialMediaGetData.User.ProfileImageUrl)
 		if err != nil {
 			return []entity.SocialMediaGetData{}, err
 		}
@@ -68,27 +68,27 @@ func (r socialMediaRepository) SocialMediaGetRepository(getSocialMedia entity.So
 	return response, nil
 }
 
-func (r socialMediaRepository) SocialMediaUpdateRepository(updateSocialMedia entity.SocialMedia) (entity.SocialMedia, error) {
+func (r socialMediaRepository) SocialMediaUpdateRepository(updateSocialMedia *entity.SocialMedia) (*entity.SocialMedia, error) {
 	sqlStatement := `
 	UPDATE socialmedia 
 	SET name = $1, social_media_url = $2, updated_at = $3
 	WHERE scId = $4
 	RETURNING user_id, updated_at
 	`
-	rows, err := r.db.Query(sqlStatement, updateSocialMedia.Name, updateSocialMedia.Social_media_url, time.Now().Local(), updateSocialMedia.Id)
+	rows, err := r.db.Query(sqlStatement, updateSocialMedia.Name, updateSocialMedia.SocialMediaUrl, time.Now().Local(), updateSocialMedia.Id)
 	if err != nil {
-		return entity.SocialMedia{}, err
+		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&updateSocialMedia.User_id, &updateSocialMedia.Updated_at)
+		err = rows.Scan(&updateSocialMedia.UserId, &updateSocialMedia.UpdatedAt)
 		if err != nil {
-			return entity.SocialMedia{}, err
+			return nil, err
 		}
 	}
 	return updateSocialMedia, nil
 }
 
-func (r socialMediaRepository) SocialMediaDeleteRepository(deleteSocialMedia entity.SocialMedia) error {
+func (r socialMediaRepository) SocialMediaDeleteRepository(deleteSocialMedia *entity.SocialMedia) error {
 	sqlStatement := `
 	DELETE FROM socialmedia
 	WHERE scId = $1

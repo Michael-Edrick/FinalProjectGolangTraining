@@ -9,7 +9,6 @@ func IsAuthorized() func(handler http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			header := r.Header.Get("Authorization")
-
 			claims, err := utils.ParseJWT(header)
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)

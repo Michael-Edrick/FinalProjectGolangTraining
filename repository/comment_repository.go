@@ -16,26 +16,26 @@ func NewCommentRepository(db *sql.DB) entity.CommentRepositoryInterface {
 	}
 }
 
-func (r commentRepository) CommentPostRepository(postComment entity.Comment) (entity.Comment, error) {
+func (r commentRepository) CommentPostRepository(postComment *entity.Comment) (*entity.Comment, error) {
 	sqlStatement := `
 	INSERT INTO comments (message, photo_id, user_id, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5)
 	RETURNING commentId, created_at
 	`
-	rows, err := r.db.Query(sqlStatement, postComment.Message, postComment.Photo_id, postComment.User_id, time.Now().Local(), time.Now().Local())
+	rows, err := r.db.Query(sqlStatement, postComment.Message, postComment.PhotoId, postComment.UserId, time.Now().Local(), time.Now().Local())
 	if err != nil {
-		return entity.Comment{}, err
+		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&postComment.Id, &postComment.Created_at)
+		err = rows.Scan(&postComment.Id, &postComment.CreatedAt)
 		if err != nil {
-			return entity.Comment{}, err
+			return nil, err
 		}
 	}
 	return postComment, nil
 }
 
-func (r commentRepository) CommentGetRepository(getComment entity.Comment) ([]entity.CommentGet, error) {
+func (r commentRepository) CommentGetRepository(getComment *entity.Comment) ([]entity.CommentGet, error) {
 	var response []entity.CommentGet
 	sqlStatement := `
 	SELECT 
@@ -58,13 +58,13 @@ func (r commentRepository) CommentGetRepository(getComment entity.Comment) ([]en
 	INNER JOIN photos as p on (c.photo_id = p.photoId)
 	WHERE u.userId = $1
 	`
-	rows, err := r.db.Query(sqlStatement, getComment.User_id)
+	rows, err := r.db.Query(sqlStatement, getComment.UserId)
 	if err != nil {
 		return []entity.CommentGet{}, err
 	}
 	for rows.Next() {
 		var commentGet entity.CommentGet
-		err = rows.Scan(&commentGet.Id, &commentGet.Message, &commentGet.Photo_id, &commentGet.User_id, &commentGet.Updated_at, &commentGet.Created_at, &commentGet.User.Id, &commentGet.User.Email, &commentGet.User.Username, &commentGet.Photo.Id, &commentGet.Photo.Title, &commentGet.Photo.Caption, &commentGet.Photo.Photo_url, &commentGet.Photo.User_id)
+		err = rows.Scan(&commentGet.Id, &commentGet.Message, &commentGet.PhotoId, &commentGet.UserId, &commentGet.UpdatedAt, &commentGet.CreatedAt, &commentGet.User.Id, &commentGet.User.Email, &commentGet.User.Username, &commentGet.Photo.Id, &commentGet.Photo.Title, &commentGet.Photo.Caption, &commentGet.Photo.PhotoUrl, &commentGet.Photo.UserId)
 		if err != nil {
 			return []entity.CommentGet{}, err
 		}
@@ -73,7 +73,7 @@ func (r commentRepository) CommentGetRepository(getComment entity.Comment) ([]en
 	return response, nil
 }
 
-func (r commentRepository) CommentUpdateRepository(updateComment entity.Comment) (entity.CommentUpdate, error) {
+func (r commentRepository) CommentUpdateRepository(updateComment *entity.Comment) (*entity.CommentUpdate, error) {
 	var response entity.CommentUpdate
 	sqlStatement := `
 	UPDATE comments as c
@@ -83,19 +83,20 @@ func (r commentRepository) CommentUpdateRepository(updateComment entity.Comment)
 	RETURNING c.commentId, p.title, p.caption, p.photo_url, c.user_id, c.updated_at
 	`
 	rows, err := r.db.Query(sqlStatement, updateComment.Message, time.Now().Local(), updateComment.Id)
+
 	if err != nil {
-		return entity.CommentUpdate{}, err
+		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&response.Id, &response.Title, &response.Caption, &response.Photo_url, &response.User_id, &response.Updated_at)
+		err = rows.Scan(&response.Id, &response.Title, &response.Caption, &response.PhotoUrl, &response.UserId, &response.UpdatedAt)
 		if err != nil {
-			return entity.CommentUpdate{}, err
+			return nil, err
 		}
 	}
-	return response, nil
+	return &response, nil
 }
 
-func (r commentRepository) CommentDeleteRepository(deleteComment entity.Comment) error {
+func (r commentRepository) CommentDeleteRepository(deleteComment *entity.Comment) error {
 	sqlStatement := `
 	DELETE FROM comments
 	WHERE commentId = $1

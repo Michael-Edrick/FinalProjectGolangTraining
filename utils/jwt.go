@@ -12,7 +12,8 @@ import (
 var mySecretKey = []byte("secretkey")
 
 func GenerateJWT(id int) (string, error) {
-	var mySigningKey = []byte("secretkey")
+	config := InitConfig()
+	var mySigningKey = []byte(config.SecretKey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 

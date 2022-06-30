@@ -15,31 +15,31 @@ func NewSocialMediaService(socialMediaRepository entity.SocialMediaRepositoryInt
 	}
 }
 
-func (s SocialMediaService) SocialMediaPostService(postSocialMedia entity.SocialMedia) (entity.SocialMedia, error) {
+func (s SocialMediaService) SocialMediaPostService(postSocialMedia *entity.SocialMedia) (*entity.SocialMedia, error) {
 	if postSocialMedia.Name == "" {
-		return entity.SocialMedia{}, errors.New("Name must be filled")
+		return nil, errors.New("name must be filled")
 	}
-	if postSocialMedia.Social_media_url == "" {
-		return entity.SocialMedia{}, errors.New("social media url must be filled")
+	if postSocialMedia.SocialMediaUrl == "" {
+		return nil, errors.New("social media url must be filled")
 	}
 	return s.socialMediaRepository.SocialMediaPostRepository(postSocialMedia)
 }
 
-func (s SocialMediaService) SocialMediaGetService(getSocialMedia entity.SocialMedia) ([]entity.SocialMediaGetData, error) {
+func (s SocialMediaService) SocialMediaGetService(getSocialMedia *entity.SocialMedia) ([]entity.SocialMediaGetData, error) {
 	return s.socialMediaRepository.SocialMediaGetRepository(getSocialMedia)
 }
 
-func (s SocialMediaService) SocialMediaUpdateService(updateSocialMedia entity.SocialMedia) (entity.SocialMedia, error) {
+func (s SocialMediaService) SocialMediaUpdateService(updateSocialMedia *entity.SocialMedia) (*entity.SocialMedia, error) {
 	if updateSocialMedia.Name == "" {
-		return entity.SocialMedia{}, errors.New("Name must be filled")
+		return nil, errors.New("name must be filled")
 	}
-	if updateSocialMedia.Social_media_url == "" {
-		return entity.SocialMedia{}, errors.New("social media url must be filled")
+	if updateSocialMedia.SocialMediaUrl == "" {
+		return nil, errors.New("social media url must be filled")
 	}
 	return s.socialMediaRepository.SocialMediaUpdateRepository(updateSocialMedia)
 }
 
-func (s SocialMediaService) SocialMediaDeleteService(deleteSocialMedia entity.SocialMedia) error {
+func (s SocialMediaService) SocialMediaDeleteService(deleteSocialMedia *entity.SocialMedia) error {
 	err := s.socialMediaRepository.SocialMediaDeleteRepository(deleteSocialMedia)
 	if err != nil {
 		return errors.New("something went wrong")

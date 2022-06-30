@@ -1,21 +1,14 @@
 package connection
 
 import (
+	"FinalProject/utils"
 	"database/sql"
 	"fmt"
 	"log"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "admin"
-	dbname   = "final_project"
-)
-
-func InitDatabase() (*sql.DB, error) {
-	psqlInfo := fmt.Sprintf("host= %s port= %d user= %s "+" password= %s dbname= %s sslmode=disable", host, port, user, password, dbname)
+func InitDatabase(config *utils.Config) (*sql.DB, error) {
+	psqlInfo := fmt.Sprintf("host= %s port= %s user= %s "+" password= %s dbname= %s sslmode=disable", config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresName)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatalf("%v\n", err)

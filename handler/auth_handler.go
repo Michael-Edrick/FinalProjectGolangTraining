@@ -21,7 +21,6 @@ func NewAuthHandler(r *mux.Router, userService entity.UserServiceInterface) {
 	}
 	r.HandleFunc("/users/register", handler.userRegisterHandler)
 	r.HandleFunc("/users/login", handler.userLoginHandler)
-
 }
 
 func (h AuthHandler) userRegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +34,7 @@ func (h AuthHandler) userRegisterHandler(w http.ResponseWriter, r *http.Request)
 			return
 		}
 		//masuk ke user service
-		res, err := h.userService.UserRegisterService(newUser)
+		res, err := h.userService.UserRegisterService(&newUser)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -60,7 +59,7 @@ func (h AuthHandler) userLoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//autentikasi + generate jwt
-		jwtToken, err := h.userService.UserLoginService(newLogin) //(newLogin)
+		jwtToken, err := h.userService.UserLoginService(&newLogin) //(newLogin)
 		if err != nil {
 			errorMessage, _ := json.Marshal(err.Error())
 			w.WriteHeader(http.StatusUnauthorized)

@@ -27,7 +27,6 @@ func NewUserHandler(r *mux.Router, userService entity.UserServiceInterface) {
 	s.Use(middleware.IsAuthorized())
 	s.HandleFunc("/users/{Id}", handler.userUpdateHandler)
 	s.HandleFunc("/users", handler.userDeleteHandler)
-
 }
 
 func (h UserHandler) userUpdateHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +52,7 @@ func (h UserHandler) userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				updateUser.Id = idInt
 				//masuk ke user service
-				res, err := h.userService.UserUpdateService(updateUser)
+				res, err := h.userService.UserUpdateService(&updateUser)
 				if err != nil {
 					res, _ := json.Marshal(err.Error())
 					w.Header().Add("Content-Type", "application/json")
@@ -81,11 +80,10 @@ func (h UserHandler) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write(res)
 			return
 		}
-
 		//masuk ke user service
 		var loginUser entity.User
 		loginUser.Id = int(claims["userid"].(float64))
-		err = h.userService.UserDeleteService(loginUser)
+		err = h.userService.UserDeleteService(&loginUser)
 		if err == nil {
 			response := map[string]string{
 				"message": "Your account has been successfully deleted",

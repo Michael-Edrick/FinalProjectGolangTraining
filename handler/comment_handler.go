@@ -33,7 +33,7 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 	if r.Method == "POST" {
 		//baca dr body
 		decoder := json.NewDecoder(r.Body)
-		var postComment entity.Comment
+		var postComment *entity.Comment
 		err := decoder.Decode(&postComment)
 		if err != nil {
 			w.Write([]byte("error"))
@@ -48,7 +48,7 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 			w.Write(res)
 			return
 		}
-		postComment.User_id = int(claims["userid"].(float64))
+		postComment.UserId = int(claims["userid"].(float64))
 		//masuk ke photo service
 		res, err := h.commentService.CommentPostService(postComment)
 		if err != nil {
@@ -63,7 +63,6 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 		w.Header().Add("Content-Type", "application/json")
 		w.Write(jsonData)
 	}
-
 	if r.Method == "GET" {
 		//get claims
 		header := r.Header.Get("Authorization")
@@ -76,8 +75,8 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 		}
 		//masuk ke comment service
 		var getComments entity.Comment
-		getComments.User_id = int(claims["userid"].(float64))
-		res, err := h.commentService.CommentGetService(getComments)
+		getComments.UserId = int(claims["userid"].(float64))
+		res, err := h.commentService.CommentGetService(&getComments)
 		if err != nil {
 			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
@@ -113,7 +112,7 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 			} else {
 				updateComment.Id = idInt
 				//masuk ke comment service
-				res, err := h.commentService.CommentUpdateService(updateComment)
+				res, err := h.commentService.CommentUpdateService(&updateComment)
 				if err != nil {
 					res, _ := json.Marshal(err.Error())
 					w.Header().Add("Content-Type", "application/json")
@@ -139,7 +138,7 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 			} else {
 				deleteComment.Id = idInt
 				//masuk ke comment service
-				err = h.commentService.CommentDeleteService(deleteComment)
+				err = h.commentService.CommentDeleteService(&deleteComment)
 				if err == nil {
 					response := map[string]string{
 						"message": "Your comment has been successfully deleted",

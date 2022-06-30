@@ -16,26 +16,26 @@ func NewPhotoRepository(db *sql.DB) entity.PhotoRepositoryInterface {
 	}
 }
 
-func (r photoRepository) PhotoPostRepository(postPhoto entity.Photo) (entity.Photo, error) {
+func (r photoRepository) PhotoPostRepository(postPhoto *entity.Photo) (*entity.Photo, error) {
 	sqlStatement := `
 	INSERT INTO photos (title, caption, photo_url, user_id, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING photoId, created_at
 	`
-	rows, err := r.db.Query(sqlStatement, postPhoto.Title, postPhoto.Caption, postPhoto.Photo_url, postPhoto.User_id, time.Now().Local(), time.Now().Local())
+	rows, err := r.db.Query(sqlStatement, postPhoto.Title, postPhoto.Caption, postPhoto.PhotoUrl, postPhoto.UserId, time.Now().Local(), time.Now().Local())
 	if err != nil {
-		return entity.Photo{}, err
+		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&postPhoto.Id, &postPhoto.Created_at)
+		err = rows.Scan(&postPhoto.Id, &postPhoto.CreatedAt)
 		if err != nil {
-			return entity.Photo{}, err
+			return nil, err
 		}
 	}
 	return postPhoto, nil
 }
 
-func (r photoRepository) PhotoGetRepository(getPhotos entity.Photo) ([]entity.PhotoGet, error) {
+func (r photoRepository) PhotoGetRepository(getPhotos *entity.Photo) ([]entity.PhotoGet, error) {
 	var photos []entity.PhotoGet
 	sqlStatement := `
 	SELECT 
@@ -53,13 +53,13 @@ func (r photoRepository) PhotoGetRepository(getPhotos entity.Photo) ([]entity.Ph
 	ON (p.user_id = u.userId)
 	WHERE u.userId = $1
 	`
-	rows, err := r.db.Query(sqlStatement, getPhotos.User_id)
+	rows, err := r.db.Query(sqlStatement, getPhotos.UserId)
 	if err != nil {
 		return []entity.PhotoGet{}, err
 	}
 	for rows.Next() {
 		var photoGet entity.PhotoGet
-		err = rows.Scan(&photoGet.Id, &photoGet.Title, &photoGet.Caption, &photoGet.Photo_url, &photoGet.User_id, &photoGet.Created_at, &photoGet.Updated_at, &photoGet.User.Email, &photoGet.User.Username)
+		err = rows.Scan(&photoGet.Id, &photoGet.Title, &photoGet.Caption, &photoGet.PhotoUrl, &photoGet.UserId, &photoGet.CreatedAt, &photoGet.UpdatedAt, &photoGet.User.Email, &photoGet.User.Username)
 		if err != nil {
 			return []entity.PhotoGet{}, err
 		}
@@ -68,27 +68,27 @@ func (r photoRepository) PhotoGetRepository(getPhotos entity.Photo) ([]entity.Ph
 	return photos, nil
 }
 
-func (r photoRepository) PhotoUpdateRepository(updatePhoto entity.Photo) (entity.Photo, error) {
+func (r photoRepository) PhotoUpdateRepository(updatePhoto *entity.Photo) (*entity.Photo, error) {
 	sqlStatement := `
 	UPDATE photos 
 	SET title = $1, caption = $2, photo_url = $3, updated_at = $4
 	WHERE photoId = $5
 	RETURNING user_id, updated_at
 	`
-	rows, err := r.db.Query(sqlStatement, updatePhoto.Title, updatePhoto.Caption, updatePhoto.Photo_url, time.Now().Local(), updatePhoto.Id)
+	rows, err := r.db.Query(sqlStatement, updatePhoto.Title, updatePhoto.Caption, updatePhoto.PhotoUrl, time.Now().Local(), updatePhoto.Id)
 	if err != nil {
-		return entity.Photo{}, err
+		return nil, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&updatePhoto.User_id, &updatePhoto.Updated_at)
+		err = rows.Scan(&updatePhoto.UserId, &updatePhoto.UpdatedAt)
 		if err != nil {
-			return entity.Photo{}, err
+			return nil, err
 		}
 	}
 	return updatePhoto, nil
 }
 
-func (r photoRepository) PhotoDeleteRepository(deletePhoto entity.Photo) error {
+func (r photoRepository) PhotoDeleteRepository(deletePhoto *entity.Photo) error {
 	sqlStatement := `
 	DELETE FROM photos
 	WHERE photoId = $1

@@ -5,31 +5,31 @@ import (
 )
 
 type UserServiceInterface interface {
-	UserRegisterService(user User) (User, error)
-	UserLoginService(user User) (string, error)
-	UserUpdateService(user User) (User, error)
-	UserDeleteService(user User) error
+	UserRegisterService(user *User) (*User, error)
+	UserLoginService(user *User) (string, error)
+	UserUpdateService(user *User) (*User, error)
+	UserDeleteService(user *User) error
 }
 
 type UserRepositoryInterface interface {
-	UserRegisterRepository(newuser User) (User, error)
-	UserLoginRepository(newlogin User) (User, error)
-	UserUpdateRepository(updateuser User) (User, error)
-	UserDeleteRepository(deleteuser User) error
-	UserDeletePhotoRepository(deleteuser User) error
-	UserDeleteCommentRepository(deleteuser User) error
-	UserDeleteSocMedRepository(deleteuser User) error
-	GetUserId(loginEmail User) (int, error)
+	UserRegisterRepository(newuser *User) (*User, error)
+	UserLoginRepository(newlogin *User) (*User, error)
+	UserUpdateRepository(updateuser *User) (*User, error)
+	UserDeleteRepository(deleteuser *User) error
+	UserDeletePhotoRepository(deleteuser *User) error
+	UserDeleteCommentRepository(deleteuser *User) error
+	UserDeleteSocMedRepository(deleteuser *User) error
+	GetUserId(loginEmail *User) (int, error)
 }
 
 type User struct {
-	Id         int       `json:"id"`
-	Username   string    `json:"username"`
-	Email      string    `json:"email"`
-	Password   string    `json:"password"`
-	Age        int       `json:"age"`
-	Created_at time.Time `json:"created_at"`
-	Updated_at time.Time `json:"updated_at"`
+	Id        int       `json:"id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Age       int       `json:"age"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserRegister struct {
@@ -40,12 +40,12 @@ type UserRegister struct {
 }
 
 type UserUpdate struct {
-	Id         int       `json:"id"`
-	Username   string    `json:"username"`
-	Email      string    `json:"email"`
-	Password   string    `json:"password"`
-	Age        int       `json:"age"`
-	Updated_at time.Time `json:"updated_at"`
+	Id        int       `json:"id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Age       int       `json:"age"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Token struct {
