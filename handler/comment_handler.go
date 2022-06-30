@@ -74,7 +74,7 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 			w.Write(res)
 			return
 		}
-		//masuk ke photo service
+		//masuk ke comment service
 		var getComments entity.Comment
 		getComments.User_id = int(claims["userid"].(float64))
 		res, err := h.commentService.CommentGetService(getComments)
@@ -84,6 +84,7 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 			w.Write(res)
 			return
 		}
+		//keluarin response
 		jsonData, _ := json.Marshal(&res)
 		w.Header().Add("Content-Type", "application/json")
 		w.Write(jsonData)
@@ -141,7 +142,7 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 				err = h.commentService.CommentDeleteService(deleteComment)
 				if err == nil {
 					response := map[string]string{
-						"message": "Your photo has been successfully deleted",
+						"message": "Your comment has been successfully deleted",
 					}
 					res, _ := json.Marshal(response)
 					w.Header().Add("Content-Type", "application/json")

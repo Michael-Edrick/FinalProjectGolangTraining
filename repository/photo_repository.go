@@ -20,14 +20,14 @@ func (r photoRepository) PhotoPostRepository(postPhoto entity.Photo) (entity.Pho
 	sqlStatement := `
 	INSERT INTO photos (title, caption, photo_url, user_id, created_at, updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING photoId, user_id, created_at
+	RETURNING photoId, created_at
 	`
 	rows, err := r.db.Query(sqlStatement, postPhoto.Title, postPhoto.Caption, postPhoto.Photo_url, postPhoto.User_id, time.Now().Local(), time.Now().Local())
 	if err != nil {
 		return entity.Photo{}, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&postPhoto.Id, &postPhoto.User_id, &postPhoto.Created_at)
+		err = rows.Scan(&postPhoto.Id, &postPhoto.Created_at)
 		if err != nil {
 			return entity.Photo{}, err
 		}
@@ -73,14 +73,14 @@ func (r photoRepository) PhotoUpdateRepository(updatePhoto entity.Photo) (entity
 	UPDATE photos 
 	SET title = $1, caption = $2, photo_url = $3, updated_at = $4
 	WHERE photoId = $5
-	RETURNING photoId, title, caption, photo_url, user_id, updated_at
+	RETURNING user_id, updated_at
 	`
 	rows, err := r.db.Query(sqlStatement, updatePhoto.Title, updatePhoto.Caption, updatePhoto.Photo_url, time.Now().Local(), updatePhoto.Id)
 	if err != nil {
 		return entity.Photo{}, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&updatePhoto.Id, &updatePhoto.Title, &updatePhoto.Caption, &updatePhoto.Photo_url, &updatePhoto.User_id, &updatePhoto.Updated_at)
+		err = rows.Scan(&updatePhoto.User_id, &updatePhoto.Updated_at)
 		if err != nil {
 			return entity.Photo{}, err
 		}
