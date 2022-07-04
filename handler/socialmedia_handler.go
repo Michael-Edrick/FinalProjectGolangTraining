@@ -61,6 +61,7 @@ func (h SocialMediaHandler) socialMediaPostGetHandler(w http.ResponseWriter, r *
 		response := mapper.PostSocialMediaMapper(res)
 		jsonData, _ := json.Marshal(&response)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(201)
 		w.Write(jsonData)
 	}
 	if r.Method == "GET" {

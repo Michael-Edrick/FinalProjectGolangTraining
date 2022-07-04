@@ -60,6 +60,7 @@ func (h PhotoHandler) photoPostGetHandler(w http.ResponseWriter, r *http.Request
 		response := mapper.PostPhotoMapper(res)
 		jsonData, _ := json.Marshal(&response)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(201)
 		w.Write(jsonData)
 	}
 	if r.Method == "GET" {

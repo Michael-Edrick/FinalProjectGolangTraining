@@ -45,6 +45,7 @@ func (h AuthHandler) userRegisterHandler(w http.ResponseWriter, r *http.Request)
 		response := mapper.RegisterMapper(res)
 		jsonData, _ := json.Marshal(&response)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(201)
 		w.Write(jsonData)
 	}
 }
