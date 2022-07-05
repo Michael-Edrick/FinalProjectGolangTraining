@@ -4,7 +4,6 @@ import (
 	"FinalProject/entity"
 	"FinalProject/utils"
 	"errors"
-	"fmt"
 	"net/mail"
 
 	"golang.org/x/crypto/bcrypt"
@@ -102,7 +101,7 @@ func hashPassword(password string) string {
 	if err != nil {
 		return ""
 	}
-	fmt.Println(string(hashedPassword))
+	// fmt.Println(string(hashedPassword))
 	return string(hashedPassword)
 }
 
