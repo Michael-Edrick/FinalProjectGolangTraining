@@ -9,6 +9,7 @@ import (
 
 func InitDatabase(config *utils.Config) (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host= %s port= %s user= %s "+" password= %s dbname= %s sslmode=disable", config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresName)
+	fmt.Printf("sqlinfo: %v\n", psqlInfo)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatalf("%v\n", err)

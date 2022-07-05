@@ -35,42 +35,43 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 		var postComment *entity.Comment
 		err := decoder.Decode(&postComment)
 		if err != nil {
-			w.Write([]byte("error"))
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//get claims
 		header := r.Header.Get("Authorization")
 		claims, err := utils.ParseJWT(header)
 		if err != nil {
-			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
-			w.Write(res)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		postComment.UserId = int(claims["userid"].(float64))
 		//masuk ke photo service
 		res, err := h.commentService.CommentPostService(postComment)
 		if err != nil {
-			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
-			w.Write(res)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//keluarin response
 		response := mapper.PostCommentMapper(res)
-		jsonData, _ := json.Marshal(&response)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(201)
-		w.Write(jsonData)
+		w.WriteHeader(http.StatusCreated)
+		w.Write(utils.Response(response, err))
 	}
 	if r.Method == "GET" {
 		//get claims
 		header := r.Header.Get("Authorization")
 		claims, err := utils.ParseJWT(header)
 		if err != nil {
-			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
-			w.Write(res)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//masuk ke comment service
@@ -78,15 +79,15 @@ func (h CommentHandler) commentPostGetHandler(w http.ResponseWriter, r *http.Req
 		getComments.UserId = int(claims["userid"].(float64))
 		res, err := h.commentService.CommentGetService(&getComments)
 		if err != nil {
-			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
-			w.Write(res)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//keluarin response
-		jsonData, _ := json.Marshal(&res)
 		w.Header().Add("Content-Type", "application/json")
-		w.Write(jsonData)
+		w.WriteHeader(http.StatusOK)
+		w.Write(utils.Response(res, err))
 	}
 }
 
@@ -99,29 +100,33 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 		var updateComment entity.Comment
 		err := decoder.Decode(&updateComment)
 		if err != nil {
-			w.Write([]byte("error"))
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//convert param
 		if id != "" {
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
-				w.Write([]byte("error"))
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(utils.Response("", err))
 				return
 			} else {
 				updateComment.Id = idInt
 				//masuk ke comment service
 				res, err := h.commentService.CommentUpdateService(&updateComment)
 				if err != nil {
-					res, _ := json.Marshal(err.Error())
 					w.Header().Add("Content-Type", "application/json")
-					w.Write(res)
+					w.WriteHeader(http.StatusBadRequest)
+					w.Write(utils.Response("", err))
 					return
 				}
 				//keluarin response
-				jsonData, _ := json.Marshal(&res)
 				w.Header().Add("Content-Type", "application/json")
-				w.Write(jsonData)
+				w.WriteHeader(http.StatusOK)
+				w.Write(utils.Response(res, err))
 			}
 		}
 	}
@@ -131,7 +136,9 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 		if id != "" {
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
-				w.Write([]byte("error"))
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(utils.Response("", err))
 				return
 			} else {
 				deleteComment.Id = idInt
@@ -141,9 +148,9 @@ func (h CommentHandler) commentUpdateDeleteHandler(w http.ResponseWriter, r *htt
 					response := map[string]string{
 						"message": "Your comment has been successfully deleted",
 					}
-					res, _ := json.Marshal(response)
 					w.Header().Add("Content-Type", "application/json")
-					w.Write(res)
+					w.WriteHeader(http.StatusOK)
+					w.Write(utils.Response(response, err))
 					return
 				}
 			}

@@ -37,30 +37,34 @@ func (h UserHandler) userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		var updateUser entity.User
 		err := decoder.Decode(&updateUser)
 		if err != nil {
-			w.Write([]byte("error"))
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//convert param
 		if id != "" {
 			idInt, err := strconv.Atoi(id)
 			if err != nil {
-				w.Write([]byte("error"))
+				w.Header().Add("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(utils.Response("", err))
 				return
 			} else {
 				updateUser.Id = idInt
 				//masuk ke user service
 				res, err := h.userService.UserUpdateService(&updateUser)
 				if err != nil {
-					res, _ := json.Marshal(err.Error())
 					w.Header().Add("Content-Type", "application/json")
-					w.Write(res)
+					w.WriteHeader(http.StatusBadRequest)
+					w.Write(utils.Response("", err))
 					return
 				}
 				//keluarin response
 				response := mapper.UpdateMapper(res)
-				jsonData, _ := json.Marshal(&response)
 				w.Header().Add("Content-Type", "application/json")
-				w.Write(jsonData)
+				w.WriteHeader(http.StatusOK)
+				w.Write(utils.Response(response, err))
 			}
 		}
 	}
@@ -72,9 +76,9 @@ func (h UserHandler) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
 		claims, err := utils.ParseJWT(header)
 		if err != nil {
-			res, _ := json.Marshal(err.Error())
 			w.Header().Add("Content-Type", "application/json")
-			w.Write(res)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(utils.Response("", err))
 			return
 		}
 		//masuk ke user service
@@ -85,9 +89,9 @@ func (h UserHandler) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			response := map[string]string{
 				"message": "Your account has been successfully deleted",
 			}
-			res, _ := json.Marshal(response)
 			w.Header().Add("Content-Type", "application/json")
-			w.Write(res)
+			w.WriteHeader(http.StatusOK)
+			w.Write(utils.Response(response, err))
 			return
 		}
 	}
