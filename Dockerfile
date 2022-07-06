@@ -13,3 +13,6 @@ EXPOSE 8088
 
 CMD [ "/app/binary" ]
 
+RUN apk update && apk add --update make
+
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest

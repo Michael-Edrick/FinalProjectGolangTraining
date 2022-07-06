@@ -3,25 +3,22 @@ services:
   database:
     image: postgres:latest
     ports:
-      - "5432:5432"
+      - "5431:5432"
     tty: true
     restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PORT: ${POSTGRES_PORT}
     volumes:
       - db_data:/db
     networks:
       database-app:
-  calculator:
+  app:
     build: .
     ports:
       - "8088:8088"
     depends_on:
       - database
-    volumes:
-      - app_data:/app
     networks:
       database-app:
     environment:
@@ -29,12 +26,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_NAME: ${POSTGRES_NAME}
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_HOST: database
+      POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
       PORT: ${PORT}
     restart: on-failure
 volumes:
   db_data:
-  app_data:
 networks:
   database-app:
